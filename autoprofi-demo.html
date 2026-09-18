@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Автопрофи × Hackera — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#15171A;
+    --paper-2:#1D2024;
+    --ink:#F2F1EC;
+    --ink-soft:#9B9C9E;
+    --line:#2C2F33;
+    --accent:#E85D2C;
+    --accent-contrast:#15171A;
+    --success:#5FAE6E;
+    --success-bg:#1C2A1E;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --paper:#F5F4F1;
+      --paper-2:#EAE8E2;
+      --ink:#181A1C;
+      --ink-soft:#5C5E60;
+      --line:#D9D6CE;
+      --accent:#D24E1F;
+      --accent-contrast:#FFFFFF;
+      --success:#3E7A4C;
+      --success-bg:#E3EFE4;
+    }
+  }
+  :root[data-theme="light"]{
+    --paper:#F5F4F1;
+    --paper-2:#EAE8E2;
+    --ink:#181A1C;
+    --ink-soft:#5C5E60;
+    --line:#D9D6CE;
+    --accent:#D24E1F;
+    --accent-contrast:#FFFFFF;
+    --success:#3E7A4C;
+    --success-bg:#E3EFE4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Work Sans', -apple-system, sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Oswald', sans-serif; font-weight:600; margin:0; letter-spacing:0.01em; text-transform:uppercase;}
+  a{color:inherit;}
+
+  nav{display:flex; align-items:center; justify-content:space-between; padding:26px 24px; border-bottom:1px solid var(--line);}
+  .wordmark{font-family:'Oswald', sans-serif; font-size:16px; letter-spacing:0.14em; text-transform:uppercase;}
+  .wordmark span{color:var(--accent);}
+  .badge{font-size:11.5px; color:var(--ink-soft); border:1px solid var(--line); padding:5px 11px; border-radius:99px;}
+
+  .hero{display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center; padding:64px 24px 56px; max-width:1040px; margin:0 auto;}
+  .hero h1{font-size:clamp(28px,4vw,42px); line-height:1.16; text-transform:none;}
+  .hero p{color:var(--ink-soft); font-size:16.5px; max-width:46ch; margin-top:18px;}
+  .hero-note{margin-top:26px; font-size:13px; color:var(--ink-soft); display:flex; gap:8px; align-items:baseline;}
+  .hero-note::before{content:"—"; color:var(--accent);}
+  .rig{width:100%; height:auto; transition:transform .15s ease-out;}
+  @media (max-width:760px){ .hero{grid-template-columns:1fr; padding-top:44px;} .rig{max-width:300px; margin:0 auto;} }
+
+  section{padding:60px 24px; border-top:1px solid var(--line);}
+  .section-inner{max-width:920px; margin:0 auto;}
+  .eyebrow-line{display:flex; align-items:center; gap:14px; margin-bottom:26px; color:var(--ink-soft); font-size:13px;}
+  .eyebrow-line .num{font-family:'Oswald', sans-serif; color:var(--accent); font-size:13px; letter-spacing:0.08em; text-transform:uppercase;}
+  .eyebrow-line .rule{flex:1; height:1px; background:var(--line);}
+
+  .observed-grid{display:grid; grid-template-columns:1.2fr 1fr; gap:44px;}
+  .observed-grid blockquote{margin:0; font-size:19px; line-height:1.55; font-weight:400; color:var(--ink);}
+  .observed-grid blockquote span{color:var(--accent);}
+  .tags{display:flex; flex-wrap:wrap; gap:10px; align-content:flex-start;}
+  .tag{border:1px solid var(--line); padding:9px 14px; border-radius:6px; font-size:13.5px; color:var(--ink-soft);}
+  @media (max-width:700px){ .observed-grid{grid-template-columns:1fr;} }
+
+  .chat-frame{border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper-2); max-width:560px; margin:0 auto;}
+  .chat-topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line);}
+  .chat-topbar .who{display:flex; align-items:center; gap:10px; font-size:14px;}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--success); flex:none;}
+  .chat-body{min-height:300px; padding:20px 18px; display:flex; flex-direction:column; gap:12px;}
+  .bubble{max-width:82%; padding:10px 14px; border-radius:8px; font-size:14.5px; line-height:1.5; opacity:0; transform:translateY(6px); animation:rise .35s ease forwards;}
+  @keyframes rise{ to{opacity:1; transform:translateY(0);} }
+  .bubble.visitor{align-self:flex-end; background:var(--accent); color:var(--accent-contrast); border-bottom-right-radius:2px;}
+  .bubble.ai{align-self:flex-start; background:var(--paper); border:1px solid var(--line); border-bottom-left-radius:2px;}
+  .typing{align-self:flex-start; display:flex; gap:4px; padding:12px 14px; background:var(--paper); border:1px solid var(--line); border-radius:8px; opacity:0; animation:rise .25s ease forwards;}
+  .typing i{width:6px; height:6px; border-radius:50%; background:var(--ink-soft); display:inline-block; animation:blink 1.1s infinite;}
+  .typing i:nth-child(2){animation-delay:.15s;} .typing i:nth-child(3){animation-delay:.3s;}
+  @keyframes blink{ 0%,80%,100%{opacity:.25;} 40%{opacity:1;} }
+  .chat-footer{padding:16px 18px; border-top:1px solid var(--line); text-align:center;}
+  .play-btn{background:var(--accent); color:var(--accent-contrast); border:none; padding:12px 24px; font-family:'Oswald', sans-serif; font-size:12.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; border-radius:4px; cursor:pointer;}
+  .play-btn:disabled{opacity:.45; cursor:default;}
+  .replay-btn{background:none; border:1px solid var(--line); color:var(--ink-soft); padding:9px 16px; font-size:13px; border-radius:6px; cursor:pointer; display:none;}
+
+  .lead-wrap{max-width:420px; margin:26px auto 0; opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease;}
+  .lead-wrap.shown{opacity:1; transform:translateY(0);}
+  .lead-card{border:1px solid var(--line); border-radius:10px; background:var(--paper-2); overflow:hidden;}
+  .lead-head{padding:12px 16px; border-bottom:1px solid var(--line); font-size:12px; letter-spacing:0.04em; color:var(--ink-soft); display:flex; justify-content:space-between; text-transform:uppercase; font-family:'Oswald', sans-serif;}
+  .lead-rows{padding:16px;}
+  .lead-row{display:flex; justify-content:space-between; padding:7px 0; font-size:14px; border-bottom:1px dashed var(--line);}
+  .lead-row:last-of-type{border-bottom:none;}
+  .lead-row span:first-child{color:var(--ink-soft);}
+  .lead-score{margin-top:12px; display:flex; align-items:center; justify-content:space-between; background:var(--success-bg); color:var(--success); padding:9px 12px; border-radius:6px; font-size:13px; font-weight:600; font-family:'Oswald',sans-serif; letter-spacing:0.04em; text-transform:uppercase;}
+  .lead-actions{display:flex; gap:8px; padding:0 16px 16px;}
+  .lead-actions div{flex:1; text-align:center; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:9px 6px; color:var(--ink-soft);}
+
+  .flow{max-width:560px; margin:0 auto;}
+  .flow-row{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px;}
+  .flow-box{border:1px solid var(--line); border-radius:6px; padding:12px 16px; font-size:13.5px; text-align:center; background:var(--paper-2); flex:1;}
+  .flow-box.main{border-color:var(--accent); color:var(--accent); font-weight:600; background:transparent;}
+  .flow-arrow{display:flex; justify-content:center; color:var(--ink-soft); font-size:15px; margin:2px 0;}
+  .flow-queries{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:14px;}
+  .flow-queries span{font-size:12px; color:var(--ink-soft); border:1px solid var(--line); border-radius:99px; padding:5px 12px;}
+
+  .ticker-wrap{max-width:560px; margin:34px auto 0; text-align:center;}
+  .ticker-label{font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); opacity:.7; margin-bottom:10px;}
+  .ticker{display:inline-flex; align-items:center; gap:9px; border:1px solid var(--line); border-radius:99px; padding:8px 16px; font-size:13px; color:var(--ink-soft); min-width:260px; justify-content:center;}
+  .ticker .pulse{width:7px; height:7px; border-radius:50%; background:var(--success); flex:none; animation:pulse 1.8s infinite;}
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+  .ticker span.txt{transition:opacity .35s ease;}
+  .ticker span.txt.fading{opacity:0;}
+
+  footer{padding:56px 24px 70px; text-align:center;}
+  footer .cta-line{font-family:'Oswald', sans-serif; font-size:20px; margin-bottom:10px; letter-spacing:0.02em;}
+  footer .cta-line b{color:var(--accent);}
+  footer p{color:var(--ink-soft); font-size:13.5px; max-width:44ch; margin:0 auto;}
+  footer .disclaimer{margin-top:26px; font-size:12px; color:var(--ink-soft); opacity:.7;}
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1 !important; transform:none !important; transition:none !important;}
+    .bubble,.typing,.lead-wrap{animation:none !important; transition:none !important; opacity:1 !important; transform:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wordmark">АВТО<span>ПРОФИ</span></div>
+  <div class="badge">DEMO — концепция от Hackera</div>
+</nav>
+
+<div class="hero">
+  <div class="reveal">
+    <h1>Всеки посетител на autoprofi.bg получава мигновен отговор коя част пасва на колата му</h1>
+    <p>Демонстрация как AI асистент поема запитването на клиента, разпознава модела на колата и нужната част, и го насочва право към поръчка или консултация.</p>
+    <div class="hero-note">2-минутна демонстрация, изградена специално за Автопрофи</div>
+  </div>
+  <svg class="rig" id="rigSvg" viewBox="0 0 300 240" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="150" cy="120" r="70" fill="none" stroke="var(--line)" stroke-width="1.3"/>
+    <circle cx="150" cy="120" r="46" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+    <circle cx="150" cy="120" r="10" fill="none" stroke="var(--ink)" stroke-width="1.6"/>
+    <line x1="150" y1="74" x2="150" y2="50" stroke="var(--ink)" stroke-width="1.3"/>
+    <line x1="150" y1="166" x2="150" y2="190" stroke="var(--ink)" stroke-width="1.3"/>
+    <line x1="104" y1="120" x2="80" y2="120" stroke="var(--ink)" stroke-width="1.3"/>
+    <line x1="196" y1="120" x2="220" y2="120" stroke="var(--ink)" stroke-width="1.3"/>
+    <line x1="118" y1="88" x2="102" y2="72" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="182" y1="88" x2="198" y2="72" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="118" y1="152" x2="102" y2="168" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="182" y1="152" x2="198" y2="168" stroke="var(--ink)" stroke-width="1.1"/>
+    <text x="14" y="225" font-family="Work Sans" font-size="9" fill="var(--ink-soft)" letter-spacing="1">СПЕЦ. № — СПИРАЧЕН ДИСК Ø300</text>
+  </svg>
+</div>
+
+<section>
+  <div class="section-inner reveal">
+    <div class="eyebrow-line"><span class="num">Открихме</span><div class="rule"></div></div>
+    <div class="observed-grid">
+      <blockquote>Разгледахме Автопрофи и видяхме търговец с <span>широк асортимент</span> от авточасти и стабилен онлайн трафик — типичният посетител знае модела на колата си, но не винаги номера на частта.</blockquote>
+      <div class="tags">
+        <div class="tag">Резервни части</div>
+        <div class="tag">Консумативи</div>
+        <div class="tag">Масла и филтри</div>
+        <div class="tag">Проверка на наличност</div>
+        <div class="tag">Бърза доставка</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner reveal">
+    <div class="eyebrow-line"><span class="num">AI асистент</span><div class="rule"></div></div>
+    <div class="chat-frame">
+      <div class="chat-topbar">
+        <div class="who"><span class="dot"></span>Автопрофи — асистент</div>
+        <div style="font-size:12px; color:var(--ink-soft);">на autoprofi.bg</div>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-footer">
+        <button class="play-btn" id="playBtn" onclick="startDemo()">Пусни демото</button>
+        <button class="replay-btn" id="replayBtn" onclick="startDemo()">Пусни отново</button>
+      </div>
+    </div>
+    <div class="lead-wrap" id="leadWrap">
+      <div class="lead-card">
+        <div class="lead-head"><span>Ново запитване</span><span>сега</span></div>
+        <div class="lead-rows">
+          <div class="lead-row"><span>Кола</span><span>VW Golf VII, 2015</span></div>
+          <div class="lead-row"><span>Част</span><span>Предни спирачни дискове</span></div>
+          <div class="lead-row"><span>Наличност</span><span>В склад — София</span></div>
+          <div class="lead-row"><span>Спешност</span><span>До 2 дни</span></div>
+          <div class="lead-score"><span>Lead Score</span><span>Висок</span></div>
+        </div>
+        <div class="lead-actions">
+          <div>→ Изпрати<br>оферта</div>
+          <div>→ Резервирай<br>наличност</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner reveal">
+    <div class="eyebrow-line"><span class="num">Как стигат дотук</span><div class="rule"></div></div>
+    <div class="flow">
+      <div class="flow-queries">
+        <span>„спирачни дискове голф 7“</span><span>„авточасти софия“</span>
+        <span>„резервни части онлайн“</span><span>„маслен филтър цена“</span>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row"><div class="flow-box main">AUTOPROFI.BG</div></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row"><div class="flow-box">AI асистент разпознава колата и частта</div></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row"><div class="flow-box">Проверена наличност и цена</div></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row"><div class="flow-box main">Резервирана поръчка</div></div>
+    </div>
+    <div class="ticker-wrap">
+      <div class="ticker-label">Пример за активност (илюстрация)</div>
+      <div class="ticker"><span class="pulse"></span><span class="txt" id="tickerTxt">Ново запитване получено — преди 3 мин</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="cta-line">Hackera → Website · SEO · <b>AI асистент</b> · Lead Generation</div>
+  <p>Клиентът не търси между стотици артикули сам — казва каква кола има и какво го притеснява, а AI-то намира точната част и наличността веднага.</p>
+  <div class="disclaimer">Демонстрационна страница, изготвена от Hackera за Автопрофи България ЕООД. Не е свързана с реалния сайт autoprofi.bg.</div>
+</footer>
+
+<script>
+  const script = [
+    {who:'visitor', text:'Здравейте, търся предни спирачни дискове за колата ми.'},
+    {who:'ai', text:'Здравейте! С удоволствие ще Ви помогна да намерим точната част. Няколко бързи въпроса:'},
+    {who:'ai', text:'Каква марка и модел е колата, и от коя година?'},
+    {who:'visitor', text:'VW Golf VII, 2015 година.'},
+    {who:'ai', text:'Търсите оригинални или съвместими (aftermarket) части?'},
+    {who:'visitor', text:'Няма значение, важното е да са качествени.'},
+    {who:'ai', text:'За кой град да проверя наличността?'},
+    {who:'visitor', text:'София.'},
+    {who:'ai', text:'Открих 2 варианта в наличност в склад София, диаметър 300мм. Мога да Ви подготвя оферта с цена и да резервирам частите, докато дойдете — искате ли?'},
+  ];
+
+  let running = false;
+
+  function startDemo(){
+    if(running) return;
+    running = true;
+    const body = document.getElementById('chatBody');
+    const playBtn = document.getElementById('playBtn');
+    const replayBtn = document.getElementById('replayBtn');
+    const leadWrap = document.getElementById('leadWrap');
+    body.innerHTML = '';
+    leadWrap.classList.remove('shown');
+    playBtn.disabled = true;
+    playBtn.style.display = 'none';
+    replayBtn.style.display = 'none';
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let i = 0;
+
+    function step(){
+      if(i >= script.length){
+        running = false;
+        replayBtn.style.display = 'inline-block';
+        setTimeout(()=> leadWrap.classList.add('shown'), 250);
+        return;
+      }
+      const msg = script[i];
+      if(reduced){ addBubble(msg); i++; step(); return; }
+      const typingEl = document.createElement('div');
+      typingEl.className = 'typing';
+      typingEl.innerHTML = '<i></i><i></i><i></i>';
+      body.appendChild(typingEl);
+      body.scrollTop = body.scrollHeight;
+      setTimeout(()=>{
+        typingEl.remove();
+        addBubble(msg);
+        i++;
+        setTimeout(step, msg.who === 'ai' ? 550 : 400);
+      }, msg.who === 'ai' ? 700 : 450);
+    }
+
+    function addBubble(msg){
+      const el = document.createElement('div');
+      el.className = 'bubble ' + msg.who;
+      el.textContent = msg.text;
+      body.appendChild(el);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    step();
+  }
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealObs.unobserve(e.target); } });
+  }, {threshold:0.15});
+  revealEls.forEach(el=> revealObs.observe(el));
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rig = document.getElementById('rigSvg');
+  if(rig && !reducedMotion && window.matchMedia('(pointer: fine)').matches){
+    const hero = document.querySelector('.hero');
+    hero.addEventListener('mousemove', (e)=>{
+      const r = hero.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      rig.style.transform = `rotateY(${px*8}deg) rotateX(${-py*8}deg)`;
+    });
+    hero.addEventListener('mouseleave', ()=>{ rig.style.transform = 'rotateY(0) rotateX(0)'; });
+  }
+
+  const chatFrame = document.querySelector('.chat-frame');
+  if(chatFrame){
+    const chatObs = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ startDemo(); chatObs.unobserve(e.target); } });
+    }, {threshold:0.5});
+    chatObs.observe(chatFrame);
+  }
+
+  const tickerMsgs = [
+    'Ново запитване получено — преди 3 мин',
+    'Резервирана наличност — преди 11 мин',
+    'AI отговори за 5 сек',
+    'Запитване за маслен филтър — преди 22 мин'
+  ];
+  const tickerEl = document.getElementById('tickerTxt');
+  if(tickerEl && !reducedMotion){
+    let t = 0;
+    setInterval(()=>{
+      tickerEl.classList.add('fading');
+      setTimeout(()=>{ t=(t+1)%tickerMsgs.length; tickerEl.textContent = tickerMsgs[t]; tickerEl.classList.remove('fading'); }, 350);
+    }, 3200);
+  }
+</script>
+</body>
+</html>
